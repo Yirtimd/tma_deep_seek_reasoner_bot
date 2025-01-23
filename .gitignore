@@ -42,4 +42,6 @@ next-env.d.ts
 
 
 # .gitignore
+node_modules
 .env.local
+.next

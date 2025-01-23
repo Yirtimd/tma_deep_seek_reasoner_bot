@@ -6,15 +6,26 @@ const Chat = () => {
   const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       dispatch({ type: 'ADD_MESSAGE', payload: { text: input, sender: 'user' } });
       setInput('');
 
-      // Здесь можно добавить логику для отправки запроса к API
-      setTimeout(() => {
-        dispatch({ type: 'ADD_MESSAGE', payload: { text: 'Ответ от бота', sender: 'bot' } });
-      }, 1000);
+      // Отправляем запрос к API
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ messages: [{ role: 'user', content: input }] }),
+        });
+
+        const data = await response.json();
+        dispatch({ type: 'ADD_MESSAGE', payload: { text: data.content, sender: 'bot' } });
+      } catch (error) {
+        console.error('Ошибка при запросе к API:', error);
+      }
     }
   };
 
