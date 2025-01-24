@@ -13,7 +13,7 @@ export default async function handler(req, res) {
       const response = await openai.chat.completions.create({
         model: 'deepseek-reasoner',
         messages,
-        max_tokens: 1000,
+        max_tokens: 500,
       });
 
       res.status(200).json(response.choices[0].message);
