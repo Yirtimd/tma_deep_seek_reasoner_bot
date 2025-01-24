@@ -9,13 +9,15 @@ const Chat = () => {
   const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Обработчик изменения размера экрана
   useEffect(() => {
     const handleResize = () => {
       const windowHeight = window.innerHeight;
       const viewportHeight = window.visualViewport.height;
-      setKeyboardHeight(windowHeight - viewportHeight);
+      const newKeyboardHeight = windowHeight - viewportHeight;
+      setKeyboardHeight(newKeyboardHeight);
     };
 
     const viewport = window.visualViewport;
@@ -135,8 +137,7 @@ const Chat = () => {
       <div 
         className="flex-1 overflow-y-auto px-4 py-4"
         style={{ 
-          maxHeight: `calc(100vh - ${keyboardHeight > 0 ? 
-            `160px - ${keyboardHeight}px` : '160px'})` 
+          paddingBottom: keyboardHeight > 0 ? `${keyboardHeight + 80}px` : '0'
         }}
       >
         {messages.map((msg, index) => (
@@ -167,11 +168,12 @@ const Chat = () => {
 
       {/* Поле ввода */}
       <div 
-        className="border-t px-4 py-3 bg-white"
+        ref={inputRef}
+        className="border-t px-4 py-3 bg-white fixed bottom-0 left-0 right-0"
         style={{ 
-          paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '0',
           transform: keyboardHeight > 0 ? `translateY(-${keyboardHeight}px)` : 'none',
-          transition: 'transform 0.2s ease'
+          transition: 'transform 0.2s ease',
+          paddingBottom: keyboardHeight > 0 ? 'env(safe-area-inset-bottom)' : '0'
         }}
       >
         <div className="flex gap-2">
