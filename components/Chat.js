@@ -1,22 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Chat = () => {
   const [input, setInput] = useState('');
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
+
+  // Отслеживаем изменение высоты экрана при появлении клавиатуры
+  useEffect(() => {
+    const handleResize = () => {
+      const windowHeight = window.innerHeight;
+      const viewportHeight = window.visualViewport.height;
+      const newKeyboardHeight = windowHeight - viewportHeight;
+      setKeyboardHeight(newKeyboardHeight);
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
 
   const handleSend = async () => {
     if (input.trim()) {
       dispatch({ type: 'ADD_MESSAGE', payload: { text: input, sender: 'user' } });
       setInput('');
 
-      // Отправляем запрос к API
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.API_KEY}`,
           },
           body: JSON.stringify({ messages: [{ role: 'user', content: input }] }),
         });
@@ -34,7 +55,7 @@ const Chat = () => {
       <div className="container mx-auto shadow-lg rounded-lg bg-white h-[90vh] w-[90vw] max-w-4xl flex flex-col">
         {/* Шапка чата */}
         <div className="px-5 py-5 flex justify-between items-center bg-white border-b-2">
-          <div className="font-semibold text-2xl text-black">You_AI_Chat</div>
+          <div className="font-semibold text-2xl">You_AI_Chat</div>
           <div className="h-12 w-12 p-2 bg-yellow-500 rounded-full text-white font-semibold flex items-center justify-center">
             YN
           </div>
@@ -61,7 +82,10 @@ const Chat = () => {
         </div>
 
         {/* Поле ввода и кнопка отправки */}
-        <div className="flex w-full p-5">
+        <div
+          className="flex w-full p-5 transition-all duration-300"
+          style={{ marginBottom: keyboardHeight }}
+        >
           <input
             type="text"
             value={input}
