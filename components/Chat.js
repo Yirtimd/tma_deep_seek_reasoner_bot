@@ -127,9 +127,9 @@ const Chat = () => {
     <div className="fixed inset-0 bg-white flex flex-col">
       {/* Шапка чата */}
       <div className="px-4 py-3 border-b flex items-center justify-between">
-        <div className="font-bold text-xl">You_AI_Chat</div>
-        <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white">
-          YN
+        <div className="font-bold text-xl">Deep Seek R1 Chat</div>
+        <div className="w-32 h-10 bg-yellow-500 rounded-tl-3xl rounded-bl-3xl flex items-center justify-center text-black">
+          VL ad Sos-null
         </div>
       </div>
 
@@ -157,8 +157,8 @@ const Chat = () => {
           </div>
         ))}
         {isLoading && (
-          <div className="flex justify-start mb-3">
-            <div className="bg-gray-100 text-gray-800 px-4 py-2 rounded-2xl rounded-bl-none">
+          <div className="flex justify-start">
+            <div className="text-gray-800 text-xs px-4 py-2">
               Печатает...
             </div>
           </div>
