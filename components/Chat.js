@@ -3,27 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const Chat = () => {
   const [input, setInput] = useState('');
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
-
-  // Обработчик изменения размера экрана
-  useEffect(() => {
-    const handleResize = () => {
-      const windowHeight = window.innerHeight;
-      const viewportHeight = window.visualViewport.height;
-      setKeyboardHeight(windowHeight - viewportHeight);
-    };
-
-    const viewport = window.visualViewport;
-    if (viewport) {
-      viewport.addEventListener('resize', handleResize);
-      return () => viewport.removeEventListener('resize', handleResize);
-    }
-  }, []);
 
   // Автоматическая прокрутка к последнему сообщению
   useEffect(() => {
@@ -81,12 +65,7 @@ const Chat = () => {
       </div>
 
       {/* Область сообщений */}
-      <div 
-        className="flex-1 overflow-y-auto px-4 py-4"
-        style={{ 
-          paddingBottom: keyboardHeight > 0 ? `${keyboardHeight + 80}px` : '0'
-        }}
-      >
+      <div className="flex-1 overflow-y-auto px-4 py-4">
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -114,14 +93,7 @@ const Chat = () => {
       </div>
 
       {/* Поле ввода */}
-      <div 
-        className="border-t px-4 py-3 bg-white fixed bottom-0 left-0 right-0"
-        style={{ 
-          transform: keyboardHeight > 0 ? `translateY(-${keyboardHeight}px)` : 'none',
-          transition: 'transform 0.2s ease',
-          paddingBottom: keyboardHeight > 0 ? 'env(safe-area-inset-bottom)' : '0'
-        }}
-      >
+      <div className="border-t px-4 py-3 bg-white fixed bottom-0 left-0 right-0">
         <div className="flex gap-2">
           <input
             type="text"
