@@ -1,35 +1,28 @@
 import { OpenAI } from 'openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY, // Убедитесь, что ключ API задан в .env
+  apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: 'https://api.deepseek.com',
 });
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
+    const { messages } = req.body;
+
     try {
       const response = await openai.chat.completions.create({
         model: 'deepseek-reasoner',
-        messages: req.body.messages,
-        stream: true,
+        messages,
+        max_tokens: 1000,
       });
 
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-
-      for await (const chunk of response) {
-        const content = chunk.choices[0]?.delta?.content || '';
-        res.write(`data: ${JSON.stringify({ content })}\n`); // Важно: только \n
-        await new Promise(resolve => setTimeout(resolve, 50)); // Имитация задержки
-      }
-
-      res.end();
+      const content = response.choices[0].message.content;
+      res.status(200).json({ content });
     } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: error.message });
+      console.error('Ошибка при запросе к API Deepseek:', error);
+      res.status(500).json({ error: 'Ошибка при запросе к API Deepseek' });
     }
   } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Метод не поддерживается' });
   }
 }
