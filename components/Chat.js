@@ -34,6 +34,20 @@ const Chat = () => {
     }
   }, [messages, keyboardHeight]);
 
+  // Прокрутка к нижней части при фокусе на поле ввода
+  useEffect(() => {
+    const handleFocus = () => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    const inputElement = inputRef.current;
+    if (inputElement) {
+      inputElement.addEventListener('focus', handleFocus);
+      return () => inputElement.removeEventListener('focus', handleFocus);
+    }
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim()) return;
